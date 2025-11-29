@@ -1,0 +1,81 @@
+{% extends "MainApp/base.html" %}
+{% load static %}
+
+{% block title %}Catálogo de Productos{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-3">
+        <div class="card shadow-sm p-3 mb-4 bg-light">
+            <h5 class="card-title text-primary">Filtros</h5>
+            
+            <form method="GET" action="{% url 'product_list' %}" class="mb-4">
+                <div class="input-group">
+                    <input type="text" name="q" class="form-control" placeholder="Buscar..." value="{{ search_query|default_if_none:'' }}">
+                    <button type="submit" class="btn btn-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                        </svg>
+                    </button>
+                </div>
+            </form>
+
+            <h6>Categorías:</h6>
+            <div class="list-group">
+                <a href="{% url 'product_list' %}" class="list-group-item list-group-item-action {% if not selected_category %}active{% endif %}">
+                    Todas
+                </a>
+                {% for cat in categories %}
+                <a href="{% url 'product_list' %}?category={{ cat.slug }}" 
+                    class="list-group-item list-group-item-action {% if cat.slug == selected_category %}active{% endif %}">
+                    {{ cat.name }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-9">
+        <h2 class="mb-4">Catálogo Completo</h2>
+        
+        {% if products %}
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+                {% for product in products %}
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
+                        {% with main_image=product.images.first %}
+                            {% if main_image and main_image.image %}
+                                <img src="{{ main_image.image.url }}" class="card-img-top" alt="{{ product.name }}" style="height: 200px; object-fit: cover;">
+                            {% else %}
+                                <div class="text-center text-muted border-bottom" style="height: 200px; line-height: 200px; background-color: #e9ecef;">
+                                    [Sin Imagen]
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+                        
+                        <div class="card-body">
+                            {% if product.featured %}
+                                <span class="badge bg-warning text-dark mb-2">DESTACADO</span>
+                            {% endif %}
+                            <h5 class="card-title">
+                                <a href="{% url 'product_detail' slug=product.slug %}" class="text-decoration-none text-primary">{{ product.name }}</a>
+                            </h5>
+                            <p class="card-text text-muted small">{{ product.description|truncatechars:50 }}</p>
+                        </div>
+
+                        <div class="card-footer d-flex justify-content-between align-items-center">
+                            <span class="fs-5 fw-bold text-success">${{ product.price|floatformat:0 }}</span>
+                            <a href="{% url 'product_detail' slug=product.slug %}" class="btn btn-sm btn-outline-secondary">Ver Detalle</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                No se encontraron productos en esta categoría o con este criterio de búsqueda.
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

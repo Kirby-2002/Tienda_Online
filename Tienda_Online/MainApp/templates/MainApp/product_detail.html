@@ -1,0 +1,27 @@
+{% extends "MainApp/base.html" %}
+{% load static %}
+
+{% block title %}Detalle de {{ product.name }}{% endblock %}
+
+{% block content %}
+    <a href="{% url 'product_list' %}">Volver al catálogo</a>
+
+    <h2>{{ product.name }}</h2>
+
+    <div class="product-images">
+        {% for img in product.images.all %}
+            <img src="{{ img.image.url }}" alt="Imagen de {{ product.name }}" width="300">
+        {% endfor %}
+    </div>
+
+    <p><strong>Precio Base:</strong> ${{ product.price }}</p>
+    <p><strong>Categoría:</strong> {{ product.category.name }}</p>
+    
+    <h3>Descripción:</h3>
+    <p>{{ product.description }}</p>
+
+    <a href="{% url 'order_request' %}?product_ref={{ product.pk }}" class="btn-solicitar">
+        Solicitar este producto
+    </a>
+
+{% endblock %}

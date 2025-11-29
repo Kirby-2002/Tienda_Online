@@ -1,0 +1,48 @@
+{% extends "MainApp/base.html" %}
+{% load static %}
+
+{% block title %}Seguimiento de Pedido #{{ order.id }}{% endblock %}
+
+{% block content %}
+<h2>Seguimiento de tu Pedido</h2>
+<p>Token de seguimiento: <strong>{{ order.token }}</strong></p>
+
+<h3>Datos del Pedido</h3>
+<ul>
+    <li><strong>Cliente:</strong> {{ order.customer_name }}</li>
+    <li><strong>Producto de Referencia:</strong> {% if order.product_ref %}{{ order.product_ref.name }}{% else %}Personalizado{% endif %}</li>
+    <li><strong>Descripción:</strong> {{ order.description }}</li>
+    <li><strong>Fecha Solicitada:</strong> {% if order.requested_date %}{{ order.requested_date }}{% else %}Sin especificar{% endif %}</li>
+    <li><strong>Solicitado el:</strong> {{ order.created|date:"d M Y H:i" }}</li>
+</ul>
+
+<hr>
+
+<h3>Estado Actual</h3>
+<p style="font-size: 1.5em; color: 
+    {% if order.status == 'finalizada' %}green
+    {% elif order.status == 'cancelada' %}red
+    {% elif order.status == 'en_proceso' %}blue
+    {% else %}orange
+    {% endif %};">
+    <strong>Estado:</strong> {{ order.get_status_display }}
+</p>
+
+<p style="font-size: 1.5em;">
+    <strong>Estado de Pago:</strong> {{ order.get_payment_status_display }}
+</p>
+
+<hr>
+
+<h3>Imágenes de Referencia</h3>
+{% if order.images.all %}
+    <div class="reference-images">
+        {% for img in order.images.all %}
+            <img src="{{ img.image.url }}" alt="Imagen de referencia" width="150" style="margin-right: 10px;">
+        {% endfor %}
+    </div>
+{% else %}
+    <p>No se subieron imágenes de referencia para este pedido.</p>
+{% endif %}
+
+{% endblock %}

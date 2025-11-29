@@ -1,0 +1,58 @@
+{% extends "MainApp/base.html" %}
+{% load static %}
+
+{% block title %}Solicitud de Pedido Personalizado{% endblock %}
+
+{% block content %}
+<h2>Solicitar Artículo Personalizado</h2>
+
+{% if product_ref %}
+    <p>Estás solicitando basado en el producto: <strong>{{ product_ref.name }}</strong></p>
+{% endif %}
+
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    
+    {{ form.customer_name.label_tag }}
+    {{ form.customer_name }}
+    
+    {{ form.email.label_tag }}
+    {{ form.email }}
+    
+    {{ form.phone.label_tag }}
+    {{ form.phone }}
+    <small>Ingresa tu número de teléfono o red social de contacto.</small>
+
+    <hr>
+    
+    {% if not product_ref %}
+        {{ form.product_ref.label_tag }}
+        {{ form.product_ref }}
+    {% else %}
+        {{ form.product_ref }}
+    {% endif %}
+
+    {{ form.description.label_tag }}
+    {{ form.description }}
+    
+    {{ form.requested_date.label_tag }}
+    {{ form.requested_date }}
+    <small>Fecha opcional en la que necesitas el producto.</small>
+    
+    <hr>
+    
+    {{ form.reference_images.label_tag }}
+    {{ form.reference_images }}
+    
+    <button type="submit">Enviar Solicitud</button>
+
+    {% for field in form.visible_fields %}
+        {% if field.errors %}
+            {% for error in field.errors %}
+                <p style="color: red;">{{ error }}</p>
+            {% endfor %}
+        {% endif %}
+    {% endfor %}
+
+</form>
+{% endblock %}
