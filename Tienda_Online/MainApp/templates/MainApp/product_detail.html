@@ -4,24 +4,97 @@
 {% block title %}Detalle de {{ product.name }}{% endblock %}
 
 {% block content %}
-    <a href="{% url 'product_list' %}">Volver al catálogo</a>
+<div class="mb-3">
+    <a href="{% url 'product_list' %}" class="btn btn-secondary btn-sm">
+        <i class="bi bi-arrow-left"></i> Volver al catálogo
+    </a>
+</div>
 
-    <h2>{{ product.name }}</h2>
+<div class="row">
+    <!-- Galería de imágenes -->
+    <div class="col-md-6">
+        <div id="productCarousel" class="carousel slide mb-3" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                {% if product.images.all %}
+                    {% for img in product.images.all %}
+                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                        {% if img.image %}
+                            <img src="{{ img.image.url }}" class="d-block w-100" alt="Imagen de {{ product.name }}" style="height: 400px; object-fit: cover;">
+                        {% else %}
+                            <div class="d-flex justify-content-center align-items-center bg-light" style="height: 400px;">
+                                <span class="text-muted">Imagen no disponible</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="carousel-item active">
+                        <div class="d-flex justify-content-center align-items-center bg-light" style="height: 400px;">
+                            <span class="text-muted">Sin imágenes disponibles</span>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+            
+            {% if product.images.count > 1 %}
+            <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            </button>
+            {% endif %}
+        </div>
 
-    <div class="product-images">
-        {% for img in product.images.all %}
-            <img src="{{ img.image.url }}" alt="Imagen de {{ product.name }}" width="300">
-        {% endfor %}
+        <!-- Miniaturas -->
+        {% if product.images.count > 1 %}
+        <div class="row g-2">
+            {% for img in product.images.all %}
+            <div class="col-3">
+                {% if img.image %}
+                    <img src="{{ img.image.url }}" class="img-thumbnail" alt="Miniatura" style="cursor: pointer; height: 80px; object-fit: cover;">
+                {% else %}
+                    <div class="img-thumbnail bg-light d-flex align-items-center justify-content-center" style="height: 80px;">
+                        <i class="bi bi-image text-muted"></i>
+                    </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
     </div>
 
-    <p><strong>Precio Base:</strong> ${{ product.price }}</p>
-    <p><strong>Categoría:</strong> {{ product.category.name }}</p>
-    
-    <h3>Descripción:</h3>
-    <p>{{ product.description }}</p>
+    <!-- Información del producto -->
+    <div class="col-md-6">
+        <h2 class="mb-3">{{ product.name }}</h2>
+        
+        {% if product.featured %}
+            <span class="badge bg-warning text-dark mb-2">DESTACADO</span>
+        {% endif %}
 
-    <a href="{% url 'order_request' %}?product_ref={{ product.pk }}" class="btn-solicitar">
-        Solicitar este producto
-    </a>
+        <div class="card mb-4">
+            <div class="card-body">
+                <h4 class="text-success mb-3">Precio Base: ${{ product.price|floatformat:0 }}</h4>
+                <p>
+                    <strong>Categoría:</strong> 
+                    {% if product.category %}
+                        <span class="badge bg-info">{{ product.category.name }}</span>
+                    {% else %}
+                        <span class="badge bg-secondary">Sin categoría</span>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <h5>Descripción:</h5>
+            <p class="text-muted">{{ product.description|default:"Sin descripción" }}</p>
+        </div>
+
+        <a href="{% url 'order_request' %}?product_ref={{ product.pk }}" class="btn btn-warning btn-lg w-100">
+            <i class="bi bi-cart-plus"></i> Solicitar este producto
+        </a>
+    </div>
+</div>
 
 {% endblock %}
