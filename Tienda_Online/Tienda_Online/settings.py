@@ -7,11 +7,10 @@ import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
 # Rutas para archivos STATIC y MEDIA
 STATIC_DIR = os.path.join(BASE_DIR, 'static')
-# 💡 CORRECCIÓN CRÍTICA: Apunta a la carpeta 'media' DENTRO de tu aplicación 'MainApp'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'MainApp/media') 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media') 
 
 # Quick-start development settings - unsuitable for production
 # SECURITY WARNING: keep the secret key used in production secret!
@@ -31,7 +30,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'MainApp', # Tu aplicación
+    'MainApp',
 ]
 
 MIDDLEWARE = [
@@ -49,10 +48,8 @@ ROOT_URLCONF = 'Tienda_Online.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        # Eliminamos 'TEMPLATES_DIRS' de aquí si no se usa una carpeta global.
-        # Solo confiamos en la configuración de la app.
-        'DIRS': [], 
-        'APP_DIRS': True, # Esto es CRÍTICO para que busque en MainApp/templates/MainApp/
+        'DIRS': [TEMPLATES_DIR], 
+        'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.request',
@@ -108,7 +105,8 @@ STATICFILES_DIRS = [STATIC_DIR] # Apunta a la carpeta static global
 
 # 💡 CONFIGURACIÓN MEDIA (Archivos subidos por usuarios)
 MEDIA_URL = '/media/'
-# MEDIA_ROOT ya está definido arriba con la ruta correcta: os.path.join(BASE_DIR, 'MainApp/media')
+MEDIA_ROOT = [STATIC_DIR]
 
 # Default primary key field type
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
