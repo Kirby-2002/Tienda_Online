@@ -4,55 +4,213 @@
 {% block title %}Solicitud de Pedido Personalizado{% endblock %}
 
 {% block content %}
-<h2>Solicitar Artículo Personalizado</h2>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">Solicitar Artículo Personalizado</h2>
+                </div>
 
-{% if product_ref %}
-    <p>Estás solicitando basado en el producto: <strong>{{ product_ref.name }}</strong></p>
-{% endif %}
+                <div class="card-body p-4">
+                    {% if product_ref %}
+                        <div class="alert alert-info alert-dismissible fade show" role="alert">
+                            <strong>Producto seleccionado:</strong> {{ product_ref.name }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endif %}
 
-<form method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
-    
-    {{ form.customer_name.label_tag }}
-    {{ form.customer_name }}
-    
-    {{ form.email.label_tag }}
-    {{ form.email }}
-    
-    {{ form.phone.label_tag }}
-    {{ form.phone }}
-    <small>Ingresa tu número de teléfono o red social de contacto.</small>
+                    <form method="POST" enctype="multipart/form-data" novalidate>
+                        {% csrf_token %}
 
-    <hr>
-    
-    {% if not product_ref %}
-        {{ form.product_ref.label_tag }}
-        {{ form.product_ref }}
-    {% else %}
-        {{ form.product_ref }}
-    {% endif %}
+                        <!-- Sección: Datos de Contacto -->
+                        <fieldset class="mb-4">
+                            <legend class="fs-5 fw-bold text-secondary mb-3">📋 Datos de Contacto</legend>
 
-    {{ form.description.label_tag }}
-    {{ form.description }}
-    
-    {{ form.requested_date.label_tag }}
-    {{ form.requested_date }}
-    <small>Fecha opcional en la que necesitas el producto.</small>
-    
-    <hr>
-    
-    {{ form.reference_images.label_tag }}
-    {{ form.reference_images }}
-    
-    <button type="submit">Enviar Solicitud</button>
+                            <div class="mb-3">
+                                <label for="{{ form.customer_name.id_for_label }}" class="form-label">
+                                    {{ form.customer_name.label }} <span class="text-danger">*</span>
+                                </label>
+                                {{ form.customer_name }}
+                                {% if form.customer_name.errors %}
+                                    <div class="alert alert-danger mt-2">
+                                        {% for error in form.customer_name.errors %}
+                                            <small>{{ error }}</small><br>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
 
-    {% for field in form.visible_fields %}
-        {% if field.errors %}
-            {% for error in field.errors %}
-                <p style="color: red;">{{ error }}</p>
-            {% endfor %}
-        {% endif %}
-    {% endfor %}
+                            <div class="mb-3">
+                                <label for="{{ form.email.id_for_label }}" class="form-label">
+                                    {{ form.email.label }} <span class="text-danger">*</span>
+                                </label>
+                                {{ form.email }}
+                                {% if form.email.errors %}
+                                    <div class="alert alert-danger mt-2">
+                                        {% for error in form.email.errors %}
+                                            <small>{{ error }}</small><br>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
 
-</form>
+                            <div class="mb-3">
+                                <label for="{{ form.phone.id_for_label }}" class="form-label">
+                                    {{ form.phone.label }} <span class="text-danger">*</span>
+                                </label>
+                                {{ form.phone }}
+                                <small class="form-text text-muted d-block mt-1">
+                                    Ingresa tu número de teléfono o red social de contacto.
+                                </small>
+                                {% if form.phone.errors %}
+                                    <div class="alert alert-danger mt-2">
+                                        {% for error in form.phone.errors %}
+                                            <small>{{ error }}</small><br>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </fieldset>
+
+                        <hr>
+
+                        <!-- Sección: Producto -->
+                        <fieldset class="mb-4">
+                            <legend class="fs-5 fw-bold text-secondary mb-3">📦 Producto</legend>
+
+                            {% if not product_ref %}
+                                <div class="mb-3">
+                                    <label for="{{ form.product_ref.id_for_label }}" class="form-label">
+                                        {{ form.product_ref.label }}
+                                    </label>
+                                    {{ form.product_ref }}
+                                    <small class="form-text text-muted d-block mt-1">
+                                        Selecciona un producto existente como referencia (opcional).
+                                    </small>
+                                    {% if form.product_ref.errors %}
+                                        <div class="alert alert-danger mt-2">
+                                            {% for error in form.product_ref.errors %}
+                                                <small>{{ error }}</small><br>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% else %}
+                                {{ form.product_ref }}
+                            {% endif %}
+
+                            <div class="mb-3">
+                                <label for="{{ form.description.id_for_label }}" class="form-label">
+                                    {{ form.description.label }} <span class="text-danger">*</span>
+                                </label>
+                                {{ form.description }}
+                                <small class="form-text text-muted d-block mt-1">
+                                    Describe detalles, colores, tamaños, materiales, etc.
+                                </small>
+                                {% if form.description.errors %}
+                                    <div class="alert alert-danger mt-2">
+                                        {% for error in form.description.errors %}
+                                            <small>{{ error }}</small><br>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="{{ form.requested_date.id_for_label }}" class="form-label">
+                                    {{ form.requested_date.label }}
+                                </label>
+                                {{ form.requested_date }}
+                                <small class="form-text text-muted d-block mt-1">
+                                    Fecha opcional en la que necesitas el producto.
+                                </small>
+                                {% if form.requested_date.errors %}
+                                    <div class="alert alert-danger mt-2">
+                                        {% for error in form.requested_date.errors %}
+                                            <small>{{ error }}</small><br>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </fieldset>
+
+                        <hr>
+
+                        <!-- Sección: Imágenes de Referencia -->
+                        <fieldset class="mb-4">
+                            <legend class="fs-5 fw-bold text-secondary mb-3">🖼️ Imágenes de Referencia</legend>
+
+                            <div class="mb-3">
+                                <label for="{{ form.reference_images.id_for_label }}" class="form-label">
+                                    {{ form.reference_images.label }}
+                                </label>
+                                <div class="input-group">
+                                    {{ form.reference_images }}
+                                </div>
+                                <small class="form-text text-muted d-block mt-1">
+                                    Sube imágenes de referencia (PNG, JPG). Máximo 5MB por archivo.
+                                </small>
+                                {% if form.reference_images.errors %}
+                                    <div class="alert alert-danger mt-2">
+                                        {% for error in form.reference_images.errors %}
+                                            <small>{{ error }}</small><br>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </fieldset>
+
+                        <!-- Botones de acción -->
+                        <div class="d-flex gap-2 justify-content-between">
+                            <a href="{% url 'product_list' %}" class="btn btn-secondary">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5z"/>
+                                </svg>
+                                Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-warning btn-lg">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
+                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                </svg>
+                                Enviar Solicitud
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Estilos personalizados para los campos del formulario -->
+<style>
+    input, textarea, select {
+        border-radius: 0.375rem;
+    }
+    
+    .form-control, .form-select {
+        border: 1px solid #dee2e6;
+        padding: 0.75rem;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: #80bdff;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+    
+    fieldset {
+        padding: 1rem;
+        border: 1px solid #e9ecef;
+        border-radius: 0.375rem;
+        background-color: #f8f9fa;
+    }
+    
+    legend {
+        float: none;
+        padding: 0 0.5rem;
+        margin-left: -0.5rem;
+    }
+</style>
+
 {% endblock %}
