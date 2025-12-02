@@ -58,22 +58,16 @@ def order_request(request, product_slug=None):
         form = OrderRequestForm(request.POST, request.FILES)
         if form.is_valid():
             new_order = form.save(commit=False)
-            
-            new_order.platform = 'web' 
+            new_order.platform = 'web'
             new_order.status = 'solicitado'
             new_order.payment_status = 'pendiente'
             new_order.save()
-            
-            if 'reference_images' in request.FILES:
-                for file in request.FILES.getlist('reference_images'):
-                    OrderImage.objects.create(order=new_order, image=file)
-            
-            tracking_url = request.build_absolute_uri(
-                redirect('order_track', token=new_order.token).url
-            )
-            
-            messages.success(request, f"¡Solicitud enviada! Usa esta URL para el seguimiento: {tracking_url}")
-            
+
+            # Guardar imágenes
+            for file in request.FILES.getlist('reference_images'):
+                OrderImage.objects.create(order=new_order, image=file)
+
+            messages.success(request, "¡Solicitud enviada correctamente!")
             return redirect('order_track', token=new_order.token)
         else:
             messages.error(request, "Error en el formulario. Por favor, revisa los datos.")
@@ -81,16 +75,12 @@ def order_request(request, product_slug=None):
         initial_data = {}
         if initial_product:
             initial_data['product_ref'] = initial_product
-        
         form = OrderRequestForm(initial=initial_data)
 
-    context = {
+    return render(request, 'MainApp/order_request_form.html', {
         'form': form,
         'product_ref': initial_product,
-    }
-    # 🚨 CORRECCIÓN 3: De 'personal_shop/order_request_form.html' a 'MainApp/order_request_form.html'
-    return render(request, 'MainApp/order_request_form.html', context)
-
+    })
 
 # --- VISTA 4: SEGUIMIENTO DEL PEDIDO (Req. 10) ---
 
