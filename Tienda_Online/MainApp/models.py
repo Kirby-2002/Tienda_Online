@@ -1,5 +1,7 @@
 from django.db import models
 import uuid
+from cloudinary.models import CloudinaryField
+
 
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -11,6 +13,7 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
+
 
 class Product(models.Model):
     name = models.CharField("Nombre", max_length=200)
@@ -28,13 +31,15 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
+
 class ProductImage(models.Model):
     product = models.ForeignKey(Product, related_name='images', on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='products/')
+    image = CloudinaryField('image')   # ✅ CAMBIO CLAVE
     order = models.PositiveSmallIntegerField(default=0)
 
     def __str__(self):
         return f"Imagen de {self.product.name}"
+
 
 class Supply(models.Model):
     name = models.CharField("Nombre", max_length=150)
@@ -50,6 +55,7 @@ class Supply(models.Model):
 
     def __str__(self):
         return self.name
+
 
 class Order(models.Model):
     PLATFORM_CHOICES = [
@@ -97,11 +103,17 @@ class Order(models.Model):
     def __str__(self):
         return f"Pedido {self.id} - {self.customer_name}"
 
+
 class OrderImage(models.Model):
     order = models.ForeignKey(Order, related_name='images', on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='orders/')
+    image = CloudinaryField('image')   # ✅ CAMBIO CLAVE
     created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"Imagen pedido {self.order.id}"
+
+
+    def __str__(self):
+        return f"Imagen pedido {self.order.id}"
+
 
